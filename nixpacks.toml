@@ -2,7 +2,15 @@
 nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.mongodb", "php82Extensions.redis", "php82Packages.composer"]
 
 [phases.install]
-cmds = ["composer install --no-dev --optimize-autoloader --ignore-platform-reqs"]
+cmds = [
+  "composer install --no-dev --optimize-autoloader --ignore-platform-reqs"
+]
+
+[phases.build]
+cmds = [
+  "php -m | grep -i mongo || echo 'MongoDB ext missing'",
+  "php -m | grep -i redis || echo 'Redis ext missing'"
+]
 
 [start]
-cmd = "php -S 0.0.0.0:$PORT -t ."
+cmd = "php -d extension=mongodb.so -d extension=redis.so -S 0.0.0.0:$PORT -t ."
