@@ -1,21 +1,19 @@
-/**
- * profile.js
- * Loads and saves profile data via jQuery AJAX.
- * Session validated using localStorage token → Redis on backend.
- */
-
 $(document).ready(function () {
 
-  const token    = localStorage.getItem('guvi_token');
+  var token   = localStorage.getItem('guvi_token');
+  var userId  = localStorage.getItem('guvi_user_id');
+  var name    = localStorage.getItem('guvi_name')     || '';
+  var email   = localStorage.getItem('guvi_email')   || '';
+  var username = localStorage.getItem('guvi_username') || '';
 
   /* Redirect to login if no session */
-  if (!token) {
+  if (!token || !userId) {
     window.location.href = 'login.html';
     return;
   }
 
   /* ── Populate static account info ── */
-  const initials = name.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || 'U';
+  var initials = name.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || 'U';
   $('#avatar_initials').text(initials);
   $('#display_name').text(name);
   $('#display_email').text(email);
@@ -26,7 +24,7 @@ $(document).ready(function () {
   /* ── Helpers ── */
   function showAlert(type, msg) {
     $('.alert-custom').hide();
-    const el = type === 'success' ? '#alert_success' : '#alert_error';
+    var el = type === 'success' ? '#alert_success' : '#alert_error';
     if (msg) $(el).text(msg);
     $(el).fadeIn(300);
     setTimeout(function () { $(el).fadeOut(400); }, 3500);
@@ -49,7 +47,7 @@ $(document).ready(function () {
     dataType: 'json',
     success: function (res) {
       if (res.success && res.profile) {
-        const p = res.profile;
+        var p = res.profile;
         $('#prof_age').val(p.age || '');
         $('#prof_dob').val(p.dob || '');
         $('#prof_contact').val(p.contact || '');
@@ -58,6 +56,7 @@ $(document).ready(function () {
         $('#prof_qualification').val(p.qualification || '');
         $('#prof_bio').val(p.bio || '');
       } else if (!res.success && res.redirect) {
+        /* Token invalid / expired */
         localStorage.clear();
         window.location.href = 'login.html';
       }
@@ -72,7 +71,7 @@ $(document).ready(function () {
     setLoading(true);
     $('.alert-custom').hide();
 
-    const profileData = {
+    var profileData = {
       action:        'update',
       token:         token,
       user_id:       userId,
@@ -94,7 +93,7 @@ $(document).ready(function () {
       success: function (res) {
         setLoading(false);
         if (res.success) {
-          showAlert('success', 'Profile updated successfully!');
+          showAlert('success', '✅ Profile updated successfully!');
         } else if (res.redirect) {
           localStorage.clear();
           window.location.href = 'login.html';
