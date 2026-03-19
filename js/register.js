@@ -4,15 +4,15 @@
  * No form submission used - strictly AJAX only.
  */
 
-var SVG_EYE_ON  = '<svg class="eye-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-var SVG_EYE_OFF = '<svg class="eye-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+const SVG_EYE_ON  = '<svg class="eye-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const SVG_EYE_OFF = '<svg class="eye-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 
 $(document).ready(function () {
 
   /* ── Password toggle with SVG ── */
   $(document).on('click', '.toggle-pw', function () {
-    var target = $('#' + $(this).data('target'));
-    var type = target.attr('type') === 'password' ? 'text' : 'password';
+    const target = $('#' + $(this).data('target'));
+    const type = target.attr('type') === 'password' ? 'text' : 'password';
     target.attr('type', type);
     $(this).html(type === 'password' ? SVG_EYE_ON : SVG_EYE_OFF);
   });
@@ -39,8 +39,8 @@ $(document).ready(function () {
   }
 
   function showAlert(type, msg) {
-    var svgCheck  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
-    var svgAlert  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    const svgCheck = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+    const svgAlert = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
     $('.alert-custom').hide();
     if (type === 'success') {
       $('#alert_success').html(svgCheck + (msg || 'Account created! Redirecting to login…')).fadeIn(300);
@@ -51,12 +51,12 @@ $(document).ready(function () {
 
   /* ── Validate ── */
   function validate() {
-    var valid = true;
-    var name  = $('#reg_name').val().trim();
-    var email = $('#reg_email').val().trim();
-    var uname = $('#reg_username').val().trim();
-    var pass  = $('#reg_password').val();
-    var conf  = $('#reg_confirm').val();
+    let valid = true;
+    const name  = $('#reg_name').val().trim();
+    const email = $('#reg_email').val().trim();
+    const uname = $('#reg_username').val().trim();
+    const pass  = $('#reg_password').val();
+    const conf  = $('#reg_confirm').val();
 
     clearError('reg_name',     'err_name');
     clearError('reg_email',    'err_email');
@@ -64,11 +64,11 @@ $(document).ready(function () {
     clearError('reg_password', 'err_password');
     clearError('reg_confirm',  'err_confirm');
 
-    if (name.length < 2)                          { showError('reg_name',     'err_name');     valid = false; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showError('reg_email',    'err_email');    valid = false; }
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(uname))      { showError('reg_username', 'err_username'); valid = false; }
-    if (pass.length < 8)                           { showError('reg_password', 'err_password'); valid = false; }
-    if (pass !== conf)                             { showError('reg_confirm',  'err_confirm');  valid = false; }
+    if (name.length < 2)                           { showError('reg_name',     'err_name');     valid = false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('reg_email',    'err_email');    valid = false; }
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(uname))       { showError('reg_username', 'err_username'); valid = false; }
+    if (pass.length < 8)                            { showError('reg_password', 'err_password'); valid = false; }
+    if (pass !== conf)                              { showError('reg_confirm',  'err_confirm');  valid = false; }
 
     return valid;
   }
@@ -101,7 +101,7 @@ $(document).ready(function () {
       },
       error: function (xhr) {
         setLoading(false);
-        var msg = 'Server error. Please try again.';
+        let msg = 'Server error. Please try again.';
         try { msg = JSON.parse(xhr.responseText).message || msg; } catch (e) {}
         showAlert('error', msg);
       }

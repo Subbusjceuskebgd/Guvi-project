@@ -1,10 +1,4 @@
 <?php
-/**
- * config.php
- * Central configuration file.
- * Reads from Railway environment variables automatically.
- * Falls back to localhost for local development.
- */
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -13,7 +7,7 @@ define('DB_HOST', getenv('MYSQLHOST')     ?: 'localhost');
 define('DB_NAME', getenv('MYSQLDATABASE') ?: 'guvi_auth');
 define('DB_USER', getenv('MYSQLUSER')     ?: 'root');
 define('DB_PASS', getenv('MYSQLPASSWORD') ?: '');
-define('DB_PORT', getenv('MYSQLPORT')     ?: '3306');
+define('DB_PORT', getenv('MYSQLPORT')     ?: '3307');
 
 // ── MongoDB Config ──
 define('MONGO_URI', getenv('MONGO_URL') ?: 'mongodb://localhost:27017');
