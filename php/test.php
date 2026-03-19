@@ -1,41 +1,54 @@
 <?php
-header('Content-Type: text/plain');
+header('Content-Type: application/json');
+require_once __DIR__ . '/../vendor/autoload.php';
 
-echo "=== Loaded Extensions ===\n";
-echo implode("\n", get_loaded_extensions());
+$result = [];
 
-echo "\n\n=== PHP INI File ===\n";
-echo php_ini_loaded_file() . "\n";
+// Test 1 - Environment Variables
+$result['env'] = [
+    'MYSQLHOST'     => getenv('MYSQLHOST')     ?: 'NOT SET',
+    'MYSQLDATABASE' => getenv('MYSQLDATABASE') ?: 'NOT SET',
+    'MYSQLUSER'     => getenv('MYSQLUSER')     ?: 'NOT SET',
+    'MYSQLPORT'     => getenv('MYSQLPORT')     ?: 'NOT SET',
+    'REDISHOST'     => getenv('REDISHOST')     ?: 'NOT SET',
+    'REDISPORT'     => getenv('REDISPORT')     ?: 'NOT SET',
+    'REDISPASSWORD' => getenv('REDISPASSWORD') ? 'SET' : 'NOT SET',
+    'MONGO_URL'     => getenv('MONGO_URL')     ? 'SET' : 'NOT SET',
+];
 
-echo "\n\n=== Scanned INI Files ===\n";
-$scanned = php_ini_scanned_files();
-echo ($scanned ?: 'none') . "\n";
-
-echo "\n\n=== Search mongodb.so in nix store ===\n";
-$paths = glob('/nix/store/*/lib/php/extensions/*mongodb*');
-if ($paths) {
-    foreach ($paths as $p) echo $p . "\n";
-} else {
-    echo "NOT FOUND in /nix/store\n";
+// Test 2 - MySQL
+try {
+    $dsn = sprintf(
+        'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
+        getenv('MYSQLHOST'), getenv('MYSQLPORT'), getenv('MYSQLDATABASE')
+    );
+    $pdo = new PDO($dsn, getenv('MYSQLUSER'), getenv('MYSQLPASSWORD'));
+    $result['mysql'] = 'CONNECTED ✅';
+} catch (Exception $e) {
+    $result['mysql'] = 'FAILED ❌ ' . $e->getMessage();
 }
 
-echo "\n\n=== Search redis.so in nix store ===\n";
-$paths2 = glob('/nix/store/*/lib/php/extensions/*redis*');
-if ($paths2) {
-    foreach ($paths2 as $p) echo $p . "\n";
-} else {
-    echo "NOT FOUND in /nix/store\n";
+// Test 3 - Redis
+try {
+    $redis = new Predis\Client([
+        'scheme'   => 'tcp',
+        'host'     => getenv('REDISHOST'),
+        'port'     => getenv('REDISPORT'),
+        'password' => getenv('REDISPASSWORD'),
+    ]);
+    $redis->ping();
+    $result['redis'] = 'CONNECTED ✅';
+} catch (Exception $e) {
+    $result['redis'] = 'FAILED ❌ ' . $e->getMessage();
 }
 
-echo "\n\n=== All PHP extensions in nix store ===\n";
-$all = glob('/nix/store/*/lib/php/extensions/*.so');
-if ($all) {
-    foreach ($all as $p) echo $p . "\n";
-} else {
-    echo "NONE FOUND\n";
+// Test 4 - MongoDB
+try {
+    $client = new MongoDB\Client(getenv('MONGO_URL'));
+    $client->listDatabases();
+    $result['mongodb'] = 'CONNECTED ✅';
+} catch (Exception $e) {
+    $result['mongodb'] = 'FAILED ❌ ' . $e->getMessage();
 }
 
-echo "\n\n=== Environment Variables ===\n";
-echo "MYSQLHOST: "     . (getenv('MYSQLHOST')     ?: 'NOT SET') . "\n";
-echo "REDISHOST: "     . (getenv('REDISHOST')     ?: 'NOT SET') . "\n";
-echo "MONGO_URL: "     . (getenv('MONGO_URL')     ? 'SET' : 'NOT SET') . "\n";
+echo json_encode($result, JSON_PRETTY_PRINT);
