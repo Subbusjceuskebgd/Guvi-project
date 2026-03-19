@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUVI – My Profile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page-wrapper" style="align-items:flex-start; padding-top:3rem;">
+    <div class="glass-card glass-card-wide">
+
+      <!-- Top bar -->
+      <div class="d-flex align-items-center mb-4">
+        <div class="brand" style="margin-bottom:0;">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#070d1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <span class="brand-name">GUVI</span>
+        </div>
+        <button class="btn-logout ms-auto d-flex align-items-center gap-2" id="btn_logout" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+
+      <!-- Profile header -->
+      <div class="profile-header">
+        <div class="avatar" id="avatar_initials">?</div>
+        <div class="profile-meta">
+          <h2 id="display_name">Loading…</h2>
+          <p id="display_email">—</p>
+        </div>
+      </div>
+
+      <!-- Account Info -->
+      <p class="profile-section-title">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Account Information
+      </p>
+      <div class="profile-grid mb-4">
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="info_name" class="form-control" readonly />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="text" id="info_email" class="form-control" readonly />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" id="info_username" class="form-control" readonly />
+        </div>
+      </div>
+
+      <!-- Editable Profile Details -->
+      <p class="profile-section-title">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Profile Details
+      </p>
+      <div class="profile-grid">
+        <div class="mb-3">
+          <label class="form-label">Age</label>
+          <input type="number" id="prof_age" class="form-control" placeholder="e.g. 22" min="1" max="120" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" id="prof_dob" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contact Number</label>
+          <input type="tel" id="prof_contact" class="form-control" placeholder="+91 98765 43210" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Gender</label>
+          <select id="prof_gender" class="form-select">
+            <option value="">Select gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">City</label>
+          <input type="text" id="prof_city" class="form-control" placeholder="e.g. Chennai" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Qualification</label>
+          <select id="prof_qualification" class="form-select">
+            <option value="">Select qualification</option>
+            <option value="High School">High School</option>
+            <option value="Diploma">Diploma</option>
+            <option value="Bachelor's">Bachelor's Degree</option>
+            <option value="Master's">Master's Degree</option>
+            <option value="PhD">PhD</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Bio</label>
+        <textarea id="prof_bio" class="form-control" rows="3" placeholder="A short bio about yourself…" style="resize:vertical;"></textarea>
+      </div>
+
+      <button class="btn-primary-custom d-flex align-items-center justify-content-center gap-2" id="btn_save" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Profile
+      </button>
+
+      <!-- Alerts -->
+      <div class="alert-custom alert-success" id="alert_success">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Profile updated successfully!
+      </div>
+      <div class="alert-custom alert-error" id="alert_error">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Failed to save profile. Please try again.
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>
