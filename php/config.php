@@ -6,6 +6,8 @@
  * Falls back to localhost for local development.
  */
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 // ── MySQL Config ──
 define('DB_HOST', getenv('MYSQLHOST')     ?: 'localhost');
 define('DB_NAME', getenv('MYSQLDATABASE') ?: 'guvi_auth');
@@ -23,7 +25,7 @@ define('REDIS_HOST', getenv('REDISHOST')     ?: '127.0.0.1');
 define('REDIS_PORT', getenv('REDISPORT')     ?: 6379);
 define('REDIS_PASS', getenv('REDISPASSWORD') ?: null);
 
-// ── PDO Connection ──
+// ── PDO Connection (MySQL) ──
 function getDB() {
     try {
         $dsn = sprintf(
@@ -56,15 +58,18 @@ function getDB() {
     }
 }
 
-// ── Redis Connection ──
+// ── Redis Connection (Predis) ──
 function getRedis() {
     try {
-        $redis = new Redis();
-        $redis->connect(REDIS_HOST, REDIS_PORT);
+        $params = [
+            'scheme' => 'tcp',
+            'host'   => REDIS_HOST,
+            'port'   => REDIS_PORT,
+        ];
         if (REDIS_PASS) {
-            $redis->auth(REDIS_PASS);
+            $params['password'] = REDIS_PASS;
         }
-        return $redis;
+        return new Predis\Client($params);
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Session service unavailable.']);
@@ -75,7 +80,8 @@ function getRedis() {
 // ── MongoDB Connection ──
 function getMongo() {
     try {
-        return new MongoDB\Driver\Manager(MONGO_URI);
+        $client = new MongoDB\Client(MONGO_URI);
+        return $client->selectDatabase(MONGO_DB);
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Profile database unavailable.']);

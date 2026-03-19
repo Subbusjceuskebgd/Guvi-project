@@ -35,14 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     try {
-        $manager = getMongo();
-        $query   = new MongoDB\Driver\Query(['user_id' => $userId], ['limit' => 1]);
-        $cursor  = $manager->executeQuery(MONGO_DB . '.' . MONGO_COL, $query);
-        $results = $cursor->toArray();
+        $db         = getMongo();
+        $collection = $db->selectCollection(MONGO_COL);
+        $doc        = $collection->findOne(['user_id' => $userId]);
 
         $profile = [];
-        if (!empty($results)) {
-            $doc = (array)$results[0];
+        if ($doc) {
             $profile = [
                 'age'           => $doc['age']           ?? '',
                 'dob'           => $doc['dob']           ?? '',
@@ -76,25 +74,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $profileDoc = [
         'user_id'       => $userId,
-        'age'           => (int)($data['age']           ?? 0),
-        'dob'           => trim($data['dob']            ?? ''),
-        'contact'       => trim($data['contact']        ?? ''),
-        'gender'        => trim($data['gender']         ?? ''),
-        'city'          => trim($data['city']           ?? ''),
-        'qualification' => trim($data['qualification']  ?? ''),
-        'bio'           => trim($data['bio']            ?? ''),
+        'age'           => (int)($data['age']          ?? 0),
+        'dob'           => trim($data['dob']           ?? ''),
+        'contact'       => trim($data['contact']       ?? ''),
+        'gender'        => trim($data['gender']        ?? ''),
+        'city'          => trim($data['city']          ?? ''),
+        'qualification' => trim($data['qualification'] ?? ''),
+        'bio'           => trim($data['bio']           ?? ''),
         'updated_at'    => new MongoDB\BSON\UTCDateTime()
     ];
 
     try {
-        $manager = getMongo();
-        $bulk    = new MongoDB\Driver\BulkWrite();
-        $bulk->update(
+        $db         = getMongo();
+        $collection = $db->selectCollection(MONGO_COL);
+        $collection->updateOne(
             ['user_id' => $userId],
             ['$set'    => $profileDoc],
             ['upsert'  => true]
         );
-        $manager->executeBulkWrite(MONGO_DB . '.' . MONGO_COL, $bulk);
         echo json_encode(['success' => true, 'message' => 'Profile updated.']);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Could not save profile.']);
