@@ -8,11 +8,10 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "find / -name 'mongodb.so' 2>/dev/null | head -5 > /app/mongo_path.txt",
-  "find / -name 'redis.so' 2>/dev/null | head -5 >> /app/mongo_path.txt",
-  "php -m >> /app/mongo_path.txt",
-  "php --ini >> /app/mongo_path.txt"
+  "mkdir -p /app/php-ini",
+  "echo 'extension=/nix/store/mybm081wdk14lqdgkah5072hq66j1acr-php-mongodb-1.20.1/lib/php/extensions/mongodb.so' > /app/php-ini/custom.ini",
+  "echo 'extension=/nix/store/2dhx5979dbd30c1x5ydqvbx7x0czxcz9-php-redis-6.1.0/lib/php/extensions/redis.so' >> /app/php-ini/custom.ini"
 ]
 
 [start]
-cmd = "php -S 0.0.0.0:$PORT -t ."
+cmd = "php -c /app/php-ini/custom.ini -S 0.0.0.0:$PORT -t ."
