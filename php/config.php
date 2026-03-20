@@ -7,7 +7,7 @@ define('DB_HOST', getenv('MYSQLHOST')     ?: 'localhost');
 define('DB_NAME', getenv('MYSQLDATABASE') ?: 'guvi_auth');
 define('DB_USER', getenv('MYSQLUSER')     ?: 'root');
 define('DB_PASS', getenv('MYSQLPASSWORD') ?: '');
-define('DB_PORT', getenv('MYSQLPORT')     ?: '3307');
+define('DB_PORT', getenv('MYSQLPORT')     ?: '3306');
 
 // ── MongoDB Config ──
 define('MONGO_URI', getenv('MONGO_URL') ?: 'mongodb://localhost:27017');

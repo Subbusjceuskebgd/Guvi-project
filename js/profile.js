@@ -1,13 +1,9 @@
 $(document).ready(function () {
 
   var token   = localStorage.getItem('guvi_token');
-  var userId  = localStorage.getItem('guvi_user_id');
-  var name    = localStorage.getItem('guvi_name')     || '';
-  var email   = localStorage.getItem('guvi_email')   || '';
-  var username = localStorage.getItem('guvi_username') || '';
 
   /* Redirect to login if no session */
-  if (!token || !userId) {
+  if (!token) {
     window.location.href = 'login.html';
     return;
   }
