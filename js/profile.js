@@ -1,6 +1,10 @@
 $(document).ready(function () {
 
   var token   = localStorage.getItem('guvi_token');
+  const userId   = localStorage.getItem('guvi_user_id');  
+  const username = localStorage.getItem('guvi_username'); 
+  const name     = localStorage.getItem('guvi_name');       
+  const email    = localStorage.getItem('guvi_email');
 
   /* Redirect to login if no session */
   if (!token) {
