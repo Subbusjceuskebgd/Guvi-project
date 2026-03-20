@@ -11,7 +11,7 @@ $(document).ready(function () {
   /* ── Password toggle with SVG ── */
   $(document).on('click', '.toggle-pw', function () {
     const target = $('#' + $(this).data('target'));
-    const type = target.attr('type') === 'password' ? 'text' : 'password';
+    const type   = target.attr('type') === 'password' ? 'text' : 'password';
     target.attr('type', type);
     $(this).html(type === 'password' ? SVG_EYE_ON : SVG_EYE_OFF);
   });
@@ -51,8 +51,8 @@ $(document).ready(function () {
   function validate() {
     clearErrors();
     let valid = true;
-    if (!$('#login_identifier').val().trim()) { showError('login_identifier', 'err_identifier');       valid = false; }
-    if (!$('#login_password').val())           { showError('login_password',   'err_login_password');  valid = false; }
+    if (!$('#login_identifier').val().trim()) { showError('login_identifier', 'err_identifier');      valid = false; }
+    if (!$('#login_password').val())           { showError('login_password',  'err_login_password');  valid = false; }
     return valid;
   }
 
@@ -74,11 +74,7 @@ $(document).ready(function () {
       success: function (res) {
         setLoading(false);
         if (res.success) {
-          localStorage.setItem('guvi_token',    res.token);
-          localStorage.setItem('guvi_user_id',  res.user_id);
-          localStorage.setItem('guvi_username', res.username);
-          localStorage.setItem('guvi_name',     res.name);
-          localStorage.setItem('guvi_email',    res.email);
+          localStorage.setItem('guvi_token', res.token); // ← only token stored
           showAlert('success', 'Login successful! Redirecting…');
           setTimeout(function () { window.location.href = 'profile.html'; }, 1400);
         } else {

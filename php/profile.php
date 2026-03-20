@@ -1,7 +1,7 @@
 <?php
 /**
  * profile.php
- * GET  : fetch profile from MongoDB
+ * GET  : fetch user info (MySQL) + profile (MongoDB)
  * POST : save/update profile in MongoDB
  * Session validated via Redis — no PHP Sessions.
  */
@@ -24,53 +24,79 @@ function validateSession($token) {
     return json_decode($raw, true);
 }
 
-// ── GET: fetch profile ──
+// ── GET: fetch user info (MySQL) + profile (MongoDB) ──
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $token  = $_GET['token']   ?? '';
-    $userId = $_GET['user_id'] ?? '';
+    $token = $_GET['token'] ?? '';
 
     $session = validateSession($token);
-    if (!$session || (string)$session['user_id'] !== (string)$userId) {
-        echo json_encode(['success'=>false,'message'=>'Unauthorized.','redirect'=>true]); exit;
+    if (!$session) {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized.', 'redirect' => true]);
+        exit;
     }
 
+    $userId = (string)$session['user_id']; // ← from Redis session
+
     try {
+        // ── Fetch name, email, username from MySQL ──
+        $pdo  = getDB();
+        $stmt = $pdo->prepare('SELECT name, email, username FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        $userRow = $stmt->fetch();
+
+        $user = [
+            'name'     => $userRow['name']     ?? '',
+            'email'    => $userRow['email']    ?? '',
+            'username' => $userRow['username'] ?? ''
+        ];
+
+        // ── Fetch profile details from MongoDB ──
         $db         = getMongo();
         $collection = $db->selectCollection(MONGO_COL);
-        $doc        = $collection->findOne(['user_id' => $userId]);
+        $profileDoc = $collection->findOne(['user_id' => $userId]);
 
         $profile = [];
-        if ($doc) {
+        if ($profileDoc) {
             $profile = [
-                'age'           => $doc['age']           ?? '',
-                'dob'           => $doc['dob']           ?? '',
-                'contact'       => $doc['contact']       ?? '',
-                'gender'        => $doc['gender']        ?? '',
-                'city'          => $doc['city']          ?? '',
-                'qualification' => $doc['qualification'] ?? '',
-                'bio'           => $doc['bio']           ?? ''
+                'age'           => $profileDoc['age']           ?? '',
+                'dob'           => $profileDoc['dob']           ?? '',
+                'contact'       => $profileDoc['contact']       ?? '',
+                'gender'        => $profileDoc['gender']        ?? '',
+                'city'          => $profileDoc['city']          ?? '',
+                'qualification' => $profileDoc['qualification'] ?? '',
+                'bio'           => $profileDoc['bio']           ?? ''
             ];
         }
-        echo json_encode(['success' => true, 'profile' => $profile]);
+
+        echo json_encode([
+            'success' => true,
+            'user'    => $user,     // ← from MySQL
+            'profile' => $profile   // ← from MongoDB
+        ]);
+
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Could not load profile.']);
     }
     exit;
 }
 
-// ── POST: save profile ──
+// ── POST: save profile in MongoDB ──
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body = file_get_contents('php://input');
     $data = json_decode($body, true);
-    if (!$data) { echo json_encode(['success'=>false,'message'=>'Invalid JSON.']); exit; }
+    if (!$data) {
+        echo json_encode(['success' => false, 'message' => 'Invalid JSON.']);
+        exit;
+    }
 
-    $token  = $data['token']   ?? '';
-    $userId = $data['user_id'] ?? '';
+    $token = $data['token'] ?? '';
 
     $session = validateSession($token);
-    if (!$session || (string)$session['user_id'] !== (string)$userId) {
-        echo json_encode(['success'=>false,'message'=>'Unauthorized.','redirect'=>true]); exit;
+    if (!$session) {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized.', 'redirect' => true]);
+        exit;
     }
+
+    $userId = (string)$session['user_id']; // ← from Redis session
 
     $profileDoc = [
         'user_id'       => $userId,

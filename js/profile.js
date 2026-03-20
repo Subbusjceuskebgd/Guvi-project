@@ -1,25 +1,12 @@
 $(document).ready(function () {
 
-  const token   = localStorage.getItem('guvi_token');
-  const userId   = localStorage.getItem('guvi_user_id');  
-  const username = localStorage.getItem('guvi_username'); 
-  const name     = localStorage.getItem('guvi_name');       
-  const email    = localStorage.getItem('guvi_email');
+  const token = localStorage.getItem('guvi_token');
 
   /* Redirect to login if no session */
   if (!token) {
     window.location.href = 'login.html';
     return;
   }
-
-  /* ── Populate static account info ── */
-  const initials = name.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || 'U';
-  $('#avatar_initials').text(initials);
-  $('#display_name').text(name);
-  $('#display_email').text(email);
-  $('#info_name').val(name);
-  $('#info_email').val(email);
-  $('#info_username').val(username);
 
   /* ── Helpers ── */
   function showAlert(type, msg) {
@@ -39,23 +26,43 @@ $(document).ready(function () {
     }
   }
 
-  /* ── Load existing profile from MongoDB ── */
+  /* ── Load user info + profile from DB ── */
   $.ajax({
     url: 'php/profile.php',
     method: 'GET',
-    data: { action: 'get', token: token, user_id: userId },
+    data: { action: 'get', token: token },
     dataType: 'json',
     success: function (res) {
-      if (res.success && res.profile) {
-        const p = res.profile;
-        $('#prof_age').val(p.age || '');
-        $('#prof_dob').val(p.dob || '');
-        $('#prof_contact').val(p.contact || '');
-        $('#prof_gender').val(p.gender || '');
-        $('#prof_city').val(p.city || '');
-        $('#prof_qualification').val(p.qualification || '');
-        $('#prof_bio').val(p.bio || '');
-      } else if (!res.success && res.redirect) {
+      if (res.success) {
+
+        /* ── Populate account info from DB ── */
+        if (res.user) {
+          const name     = res.user.name     || '';
+          const email    = res.user.email    || '';
+          const username = res.user.username || '';
+          const initials = name.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || 'U';
+
+          $('#avatar_initials').text(initials);
+          $('#display_name').text(name);
+          $('#display_email').text(email);
+          $('#info_name').val(name);
+          $('#info_email').val(email);
+          $('#info_username').val(username);
+        }
+
+        /* ── Populate profile details from DB ── */
+        if (res.profile) {
+          const p = res.profile;
+          $('#prof_age').val(p.age                  || '');
+          $('#prof_dob').val(p.dob                  || '');
+          $('#prof_contact').val(p.contact          || '');
+          $('#prof_gender').val(p.gender            || '');
+          $('#prof_city').val(p.city                || '');
+          $('#prof_qualification').val(p.qualification || '');
+          $('#prof_bio').val(p.bio                  || '');
+        }
+
+      } else if (res.redirect) {
         /* Token invalid / expired */
         localStorage.clear();
         window.location.href = 'login.html';
@@ -74,7 +81,6 @@ $(document).ready(function () {
     const profileData = {
       action:        'update',
       token:         token,
-      user_id:       userId,
       age:           $('#prof_age').val().trim(),
       dob:           $('#prof_dob').val(),
       contact:       $('#prof_contact').val().trim(),
