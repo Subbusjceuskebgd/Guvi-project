@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-  const token = localStorage.getItem('guvi_token');
+  var token   = localStorage.getItem('guvi_token');
 
   /* Redirect to login if no session */
   if (!token) {
@@ -9,7 +9,7 @@ $(document).ready(function () {
   }
 
   /* ── Populate static account info ── */
-  const initials = name.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || 'U';
+  var initials = name.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || 'U';
   $('#avatar_initials').text(initials);
   $('#display_name').text(name);
   $('#display_email').text(email);
@@ -20,7 +20,7 @@ $(document).ready(function () {
   /* ── Helpers ── */
   function showAlert(type, msg) {
     $('.alert-custom').hide();
-    const el = type === 'success' ? '#alert_success' : '#alert_error';
+    var el = type === 'success' ? '#alert_success' : '#alert_error';
     if (msg) $(el).text(msg);
     $(el).fadeIn(300);
     setTimeout(function () { $(el).fadeOut(400); }, 3500);
@@ -43,7 +43,7 @@ $(document).ready(function () {
     dataType: 'json',
     success: function (res) {
       if (res.success && res.profile) {
-        const p = res.profile;
+        var p = res.profile;
         $('#prof_age').val(p.age || '');
         $('#prof_dob').val(p.dob || '');
         $('#prof_contact').val(p.contact || '');
@@ -67,7 +67,7 @@ $(document).ready(function () {
     setLoading(true);
     $('.alert-custom').hide();
 
-    const profileData = {
+    var profileData = {
       action:        'update',
       token:         token,
       user_id:       userId,
